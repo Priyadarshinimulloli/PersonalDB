@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Priyadarshini Portfolio</title>
+  <meta name="description" content="Admin dashboard to manage Priyadarshini's portfolio content" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0f1117;
+      --surface:  rgba(255,255,255,.04);
+      --surface2: rgba(255,255,255,.07);
+      --glass:    rgba(255,255,255,.06);
+      --border:   rgba(255,255,255,.08);
+      --text:     #e4e4e7;
+      --muted:    #71717a;
+      --accent:   #2a6b4f;
+      --accent-l: #3dd68c;
+      --gold:     #c8a96e;
+      --danger:   #ef4444;
+      --danger-h: #dc2626;
+      --radius:   12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Inter", sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Top bar ── */
+    .top-bar {
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent) 40%, var(--gold) 100%);
+    }
+
+    /* ── Login Screen ── */
+    .login-screen {
+      display: flex; align-items: center; justify-content: center;
+      min-height: calc(100vh - 3px);
+      padding: 24px;
+    }
+    .login-box {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 48px 40px;
+      width: 100%; max-width: 400px;
+      backdrop-filter: blur(20px);
+      text-align: center;
+      animation: fadeIn .4s ease;
+    }
+    .login-icon {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--gold));
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 28px;
+    }
+    .login-title {
+      font-family: "Playfair Display", serif;
+      font-size: 26px; font-weight: 500;
+      margin-bottom: 8px; color: var(--text);
+    }
+    .login-subtitle {
+      font-size: 13px; color: var(--muted);
+      margin-bottom: 28px;
+    }
+    .login-field {
+      position: relative; margin-bottom: 20px;
+    }
+    .login-field input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      color: var(--text);
+      font-family: inherit; font-size: 15px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .login-field input:focus {
+      border-color: var(--accent-l);
+      box-shadow: 0 0 0 3px rgba(61,214,140,.12);
+    }
+    .login-field input::placeholder { color: var(--muted); }
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--accent), #236141);
+      color: #fff;
+      border: none; border-radius: 10px;
+      font-family: inherit; font-size: 15px; font-weight: 600;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(42,107,79,.35);
+    }
+    .login-btn:active { transform: translateY(0); }
+    .login-error {
+      color: var(--danger);
+      font-size: 13px;
+      margin-top: 14px;
+      min-height: 20px;
+    }
+
+    /* ── Nav ── */
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 32px;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(16px);
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(15,17,23,.85);
+    }
+    .nav-brand {
+      font-family: "Playfair Display", serif;
+      font-size: 20px; font-weight: 500; color: var(--text);
+      text-decoration: none;
+    }
+    .nav-brand span { color: var(--accent-l); }
+    .nav-links { display: flex; gap: 12px; align-items: center; }
+    .nav-link {
+      padding: 8px 18px; border-radius: 8px;
+      font-size: 13px; font-weight: 500;
+      text-decoration: none; color: var(--muted);
+      border: 1px solid transparent;
+      transition: all .2s; cursor: pointer;
+      background: none; font-family: inherit;
+    }
+    .nav-link:hover { color: var(--text); background: var(--surface2); }
+    .nav-link.primary {
+      background: var(--accent); color: #fff;
+      border-color: var(--accent);
+    }
+    .nav-link.primary:hover { background: #236141; }
+    .nav-link.logout {
+      color: var(--danger);
+    }
+    .nav-link.logout:hover { background: rgba(239,68,68,.1); }
+
+    /* ── Layout ── */
+    .container { max-width: 960px; margin: 0 auto; padding: 32px 24px 80px; }
+
+    /* ── Section card ── */
+    .card {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 28px;
+      backdrop-filter: blur(12px);
+      transition: border-color .25s;
+    }
+    .card:hover { border-color: rgba(255,255,255,.14); }
+
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .card-title {
+      font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--gold); font-weight: 600;
+    }
+
+    /* ── Forms ── */
+    .form-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    .form-grid.cols-1 { grid-template-columns: 1fr; }
+    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 12px; font-weight: 500;
+      color: var(--muted); letter-spacing: .04em;
+    }
+
+    input, textarea {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-family: inherit; font-size: 14px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    input:focus, textarea:focus {
+      border-color: var(--accent-l);
+      box-shadow: 0 0 0 3px rgba(61,214,140,.12);
+    }
+    textarea { resize: vertical; min-height: 80px; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 20px; border-radius: 8px;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; border: none;
+      transition: all .2s;
+      font-family: inherit;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #236141; transform: translateY(-1px); }
+    .btn-outline {
+      background: transparent; color: var(--accent-l);
+      border: 1px solid var(--accent);
+    }
+    .btn-outline:hover { background: rgba(42,107,79,.15); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover { background: var(--danger-h); }
+    .btn-sm { padding: 6px 14px; font-size: 12px; }
+    .btn-icon {
+      width: 32px; height: 32px; padding: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 8px; background: var(--surface2);
+      border: 1px solid var(--border); cursor: pointer;
+      color: var(--muted); font-size: 15px;
+      transition: all .2s;
+    }
+    .btn-icon:hover { color: var(--danger); border-color: var(--danger); }
+    .btn-icon.edit:hover { color: var(--accent-l); border-color: var(--accent-l); }
+
+    /* ── Tags ── */
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px 6px 16px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 13px; color: var(--text);
+      background: var(--surface);
+      transition: border-color .2s;
+      animation: fadeIn .3s ease;
+    }
+    .tag:hover { border-color: rgba(255,255,255,.2); }
+    .tag-remove {
+      width: 18px; height: 18px;
+      border-radius: 50%; border: none;
+      background: rgba(239,68,68,.2);
+      color: var(--danger);
+      font-size: 13px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s;
+    }
+    .tag-remove:hover { background: var(--danger); color: #fff; }
+
+    /* ── Add row ── */
+    .add-row {
+      display: flex; gap: 10px; align-items: center;
+    }
+    .add-row input { flex: 1; }
+
+    /* ── Project cards ── */
+    .project-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 22px;
+      margin-bottom: 14px;
+      transition: border-color .2s;
+      animation: fadeIn .35s ease;
+    }
+    .project-item:hover { border-color: rgba(255,255,255,.14); }
+    .project-item-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .project-item-name {
+      font-family: "Playfair Display", serif;
+      font-size: 17px; font-weight: 500; color: var(--text);
+    }
+    .project-item-desc {
+      font-size: 13px; color: var(--muted); margin-bottom: 10px;
+    }
+    .project-item-meta {
+      display: flex; flex-wrap: wrap; gap: 6px;
+    }
+    .project-item-meta .pill {
+      font-size: 11px; padding: 3px 10px;
+      border: 1px solid var(--border); border-radius: 100px;
+      color: var(--muted);
+    }
+    .project-actions { display: flex; gap: 6px; }
+
+    /* ── Toast ── */
+    .toast-container {
+      position: fixed; top: 24px; right: 24px;
+      z-index: 9999; display: flex; flex-direction: column; gap: 10px;
+    }
+    .toast {
+      padding: 14px 22px;
+      border-radius: 10px;
+      font-size: 13px; font-weight: 500;
+      color: #fff;
+      backdrop-filter: blur(12px);
+      animation: slideIn .35s ease, fadeOut .4s ease 2.4s forwards;
+      box-shadow: 0 8px 32px rgba(0,0,0,.3);
+    }
+    .toast.success { background: rgba(42,107,79,.9); border: 1px solid var(--accent-l); }
+    .toast.error { background: rgba(239,68,68,.85); border: 1px solid #f87171; }
+
+    @keyframes slideIn {
+      from { transform: translateX(60px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.65);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: #1a1c24;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 90%; max-width: 580px;
+      max-height: 85vh; overflow-y: auto;
+      padding: 32px;
+      animation: fadeIn .25s ease;
+    }
+    .modal-title {
+      font-family: "Playfair Display", serif;
+      font-size: 22px; font-weight: 500;
+      margin-bottom: 24px; color: var(--text);
+    }
+    .modal-actions {
+      display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px;
+    }
+
+    /* ── Loading ── */
+    .page-loader {
+      display: flex; align-items: center; justify-content: center;
+      height: 60vh; color: var(--muted); font-size: 13px;
+      letter-spacing: .06em;
+    }
+    .spinner {
+      width: 28px; height: 28px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent-l);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin-right: 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .nav { padding: 16px; }
+      .container { padding: 20px 16px 60px; }
+      .card { padding: 20px; }
+      .modal { padding: 24px; width: 95%; }
+      .login-box { padding: 36px 28px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- LOGIN SCREEN                           -->
+<!-- ═══════════════════════════════════════ -->
+<div id="login-screen" class="login-screen">
+  <div class="login-box">
+    <div class="login-icon">🔐</div>
+    <h1 class="login-title">Admin Access</h1>
+    <p class="login-subtitle">Enter your password to manage portfolio</p>
+    <div class="login-field">
+      <input type="password" id="login-password" placeholder="Enter admin password" autocomplete="current-password" />
+    </div>
+    <button class="login-btn" onclick="handleLogin()" id="login-btn">Sign In</button>
+    <p class="login-error" id="login-error"></p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- ADMIN DASHBOARD (hidden until login)   -->
+<!-- ═══════════════════════════════════════ -->
+<div id="dashboard" style="display:none">
+
+<nav class="nav">
+  <a href="/admin.html" class="nav-brand">Admin<span>Panel</span></a>
+  <div class="nav-links">
+    <a href="/" class="nav-link" id="view-portfolio-link">← Portfolio</a>
+    <button class="nav-link primary" onclick="loadProfile()" id="refresh-btn">↻ Refresh</button>
+    <button class="nav-link logout" onclick="handleLogout()" id="logout-btn">Logout</button>
+  </div>
+</nav>
+
+<div id="loader" class="page-loader">
+  <div class="spinner"></div> Loading profile…
+</div>
+
+<div id="content" class="container" style="display:none">
+
+  <!-- ═══ Hero / Personal Info ═══ -->
+  <div class="card" id="hero-card">
+    <div class="card-header">
+      <span class="card-title">Hero / Personal Info</span>
+      <button class="btn btn-primary btn-sm" onclick="saveHero()" id="save-hero-btn">Save</button>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label for="f-name">Full Name</label><input id="f-name" placeholder="John Doe" /></div>
+      <div class="field"><label for="f-role">Role / Title</label><input id="f-role" placeholder="Full Stack Developer" /></div>
+      <div class="field"><label for="f-age">Age</label><input id="f-age" placeholder="21" /></div>
+      <div class="field"><label for="f-city">City</label><input id="f-city" placeholder="Hubli" /></div>
+      <div class="field"><label for="f-state">State</label><input id="f-state" placeholder="Karnataka" /></div>
+    </div>
+  </div>
+
+  <!-- ═══ Skills ═══ -->
+  <div class="card" id="skills-card">
+    <div class="card-header">
+      <span class="card-title">Skills & Technologies</span>
+    </div>
+    <div class="tags" id="skills-tags"></div>
+    <div class="add-row">
+      <input id="new-skill" placeholder="Type a skill and press Add" onkeydown="if(event.key==='Enter')addSkill()" />
+      <button class="btn btn-outline btn-sm" onclick="addSkill()" id="add-skill-btn">+ Add</button>
+    </div>
+  </div>
+
+  <!-- ═══ Projects ═══ -->
+  <div class="card" id="projects-card">
+    <div class="card-header">
+      <span class="card-title">Projects</span>
+      <button class="btn btn-outline btn-sm" onclick="openProjectModal()" id="add-project-btn">+ Add Project</button>
+    </div>
+    <div id="projects-list"></div>
+  </div>
+
+  <!-- ═══ Education ═══ -->
+  <div class="card" id="edu-card">
+    <div class="card-header">
+      <span class="card-title">Education</span>
+      <button class="btn btn-primary btn-sm" onclick="saveEducation()" id="save-edu-btn">Save</button>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label for="f-degree">Degree</label><input id="f-degree" placeholder="B.E" /></div>
+      <div class="field"><label for="f-branch">Branch</label><input id="f-branch" placeholder="Computer Science" /></div>
+      <div class="field"><label for="f-puc">PUC Percentage</label><input id="f-puc" placeholder="85%" /></div>
+      <div class="field"><label for="f-sslc">SSLC Percentage</label><input id="f-sslc" placeholder="90%" /></div>
+    </div>
+  </div>
+
+  <!-- ═══ Hobbies ═══ -->
+  <div class="card" id="hobbies-card">
+    <div class="card-header">
+      <span class="card-title">Hobbies</span>
+      <button class="btn btn-primary btn-sm" onclick="saveHobbies()" id="save-hobbies-btn">Save</button>
+    </div>
+    <div class="form-grid cols-1">
+      <div class="field">
+        <label for="f-hobbies">Comma-separated list</label>
+        <input id="f-hobbies" placeholder="Reading, Coding, Traveling" />
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Contact & Social ═══ -->
+  <div class="card" id="contact-card">
+    <div class="card-header">
+      <span class="card-title">Contact & Social</span>
+      <button class="btn btn-primary btn-sm" onclick="saveContact()" id="save-contact-btn">Save</button>
+    </div>
+    <div class="form-grid">
+      <div class="field full"><label for="f-email">Email</label><input id="f-email" type="email" placeholder="you@example.com" /></div>
+      <div class="field"><label for="f-github">GitHub URL</label><input id="f-github" placeholder="https://github.com/..." /></div>
+      <div class="field"><label for="f-linkedin">LinkedIn URL</label><input id="f-linkedin" placeholder="https://linkedin.com/in/..." /></div>
+    </div>
+  </div>
+
+  <!-- ═══ Change Password ═══ -->
+  <div class="card" id="password-card">
+    <div class="card-header">
+      <span class="card-title">Change Admin Password</span>
+      <button class="btn btn-primary btn-sm" onclick="changePassword()" id="save-password-btn">Update Password</button>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label for="f-curr-pass">Current Password</label><input id="f-curr-pass" type="password" placeholder="Enter current password" /></div>
+      <div class="field"><label for="f-new-pass">New Password</label><input id="f-new-pass" type="password" placeholder="Enter new password" /></div>
+    </div>
+  </div>
+
+</div><!-- content -->
+</div><!-- dashboard -->
+
+<!-- ═══ Project Modal ═══ -->
+<div class="modal-overlay" id="project-modal">
+  <div class="modal">
+    <h2 class="modal-title" id="modal-title">Add Project</h2>
+    <div class="form-grid">
+      <div class="field full"><label for="pm-name">Project Name</label><input id="pm-name" /></div>
+      <div class="field full"><label for="pm-desc">Description</label><textarea id="pm-desc"></textarea></div>
+      <div class="field full"><label for="pm-features">Features (one per line)</label><textarea id="pm-features" placeholder="Feature 1&#10;Feature 2"></textarea></div>
+      <div class="field full"><label for="pm-tech">Tech Stack (comma-separated)</label><input id="pm-tech" placeholder="Node.js, MongoDB, React" /></div>
+      <div class="field full"><label for="pm-db">Database Design (optional)</label><input id="pm-db" /></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeProjectModal()" id="modal-cancel-btn">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProject()" id="modal-save-btn">Save Project</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = "/api/profile";
+let profileData = {};
+let editingProjectIdx = null;
+let authToken = sessionStorage.getItem("adminToken") || "";
+
+// ── Toast ──
+function toast(msg, type = "success") {
+  const c = document.getElementById("toast-container");
+  const el = document.createElement("div");
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  c.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// ── API helpers (with auth token) ──
+async function api(url, method = "GET", body) {
+  const headers = { "Content-Type": "application/json" };
+  if (authToken) headers["x-admin-token"] = authToken;
+  const opts = { method, headers };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(url, opts);
+  const data = await res.json();
+  if (res.status === 401) {
+    // Session expired — force re-login
+    handleLogout();
+    throw new Error("Session expired. Please log in again.");
+  }
+  if (!res.ok) throw new Error(data.error || "Request failed");
+  return data;
+}
+
+// ════════════════════════════════════
+// AUTH
+// ════════════════════════════════════
+async function handleLogin() {
+  const pw = document.getElementById("login-password").value;
+  const errEl = document.getElementById("login-error");
+  errEl.textContent = "";
+  if (!pw) { errEl.textContent = "Please enter a password"; return; }
+
+  try {
+    const data = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: pw }),
+    }).then(r => r.json());
+
+    if (data.error) { errEl.textContent = data.error; return; }
+
+    authToken = data.token;
+    sessionStorage.setItem("adminToken", authToken);
+    showDashboard();
+  } catch (err) {
+    errEl.textContent = "Connection error. Is the server running?";
+  }
+}
+
+function handleLogout() {
+  authToken = "";
+  sessionStorage.removeItem("adminToken");
+  document.getElementById("dashboard").style.display = "none";
+  document.getElementById("login-screen").style.display = "flex";
+  document.getElementById("login-password").value = "";
+  document.getElementById("login-error").textContent = "";
+}
+
+async function checkExistingSession() {
+  if (!authToken) return;
+  try {
+    const data = await fetch("/api/auth/verify", {
+      headers: { "x-admin-token": authToken }
+    }).then(r => r.json());
+    if (data.valid) { showDashboard(); }
+  } catch (e) { /* no-op, stay on login */ }
+}
+
+function showDashboard() {
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("dashboard").style.display = "block";
+  loadProfile();
+}
+
+// Allow Enter key on password field
+document.getElementById("login-password").addEventListener("keydown", e => {
+  if (e.key === "Enter") handleLogin();
+});
+
+// ════════════════════════════════════
+// CHANGE PASSWORD
+// ════════════════════════════════════
+async function changePassword() {
+  const curr = document.getElementById("f-curr-pass").value;
+  const nw = document.getElementById("f-new-pass").value;
+  if (!curr || !nw) { toast("Both fields are required", "error"); return; }
+  if (nw.length < 4) { toast("Password must be at least 4 characters", "error"); return; }
+  try {
+    await api("/api/auth/password", "PUT", { currentPassword: curr, newPassword: nw });
+    document.getElementById("f-curr-pass").value = "";
+    document.getElementById("f-new-pass").value = "";
+    toast("Password changed successfully!");
+  } catch (err) { toast(err.message, "error"); }
+}
+
+// ════════════════════════════════════
+// PROFILE CRUD (same as before)
+// ════════════════════════════════════
+
+// ── Load profile ──
+async function loadProfile() {
+  try {
+    profileData = await api(API);
+    fillForm();
+    document.getElementById("loader").style.display = "none";
+    document.getElementById("content").style.display = "block";
+  } catch (err) {
+    toast("Failed to load profile: " + err.message, "error");
+  }
+}
+
+function fillForm() {
+  const d = profileData;
+  const pi = d.personalInfo || {};
+  document.getElementById("f-name").value = d.name || "";
+  document.getElementById("f-role").value = d.role || "";
+  document.getElementById("f-age").value = pi.age || "";
+  document.getElementById("f-city").value = pi.city || "";
+  document.getElementById("f-state").value = pi.state || "";
+
+  renderSkillsTags(d.skills || []);
+  renderProjectsList(d.projects || []);
+
+  const edu = d.education || {};
+  document.getElementById("f-degree").value = edu.degree || "";
+  document.getElementById("f-branch").value = edu.branch || "";
+  document.getElementById("f-puc").value = edu.puc?.percentage || "";
+  document.getElementById("f-sslc").value = edu.sslc?.percentage || "";
+
+  document.getElementById("f-hobbies").value = (d.hobbies || []).join(", ");
+
+  const email = (d.contact?.email || "").replace(/\[.*?\]\((.*?)\)/, "$1").replace("mailto:", "");
+  document.getElementById("f-email").value = email;
+  document.getElementById("f-github").value = d.socialProfiles?.github || "";
+  document.getElementById("f-linkedin").value = d.socialProfiles?.linkedin || "";
+}
+
+// ── Hero ──
+async function saveHero() {
+  try {
+    await api(API, "PUT", {
+      name: document.getElementById("f-name").value,
+      role: document.getElementById("f-role").value,
+      age: document.getElementById("f-age").value,
+      city: document.getElementById("f-city").value,
+      state: document.getElementById("f-state").value,
+    });
+    toast("Hero info saved!");
+  } catch (err) { toast(err.message, "error"); }
+}
+
+// ── Skills ──
+function renderSkillsTags(skills) {
+  const c = document.getElementById("skills-tags");
+  c.innerHTML = skills.map(s => `
+    <span class="tag">
+      ${s}
+      <button class="tag-remove" onclick="removeSkill('${s.replace(/'/g, "\\'")}')" title="Remove">×</button>
+    </span>`).join("");
+}
+
+async function addSkill() {
+  const input = document.getElementById("new-skill");
+  const skill = input.value.trim();
+  if (!skill) return;
+  try {
+    await api(`${API}/skills`, "POST", { skill });
+    input.value = "";
+    profileData.skills = [...(profileData.skills || []), skill];
+    renderSkillsTags(profileData.skills);
+    toast(`Skill "${skill}" added!`);
+  } catch (err) { toast(err.message, "error"); }
+}
+
+async function removeSkill(skill) {
+  try {
+    await api(`${API}/skills/${encodeURIComponent(skill)}`, "DELETE");
+    profileData.skills = (profileData.skills || []).filter(s => s !== skill);
+    renderSkillsTags(profileData.skills);
+    toast(`Skill "${skill}" removed`);
+  } catch (err) { toast(err.message, "error"); }
+}
+
+// ── Projects ──
+function renderProjectsList(projects) {
+  const c = document.getElementById("projects-list");
+  if (!projects.length) {
+    c.innerHTML = '<p style="color:var(--muted);font-size:13px;padding:16px 0">No projects yet. Click "+ Add Project" to get started.</p>';
+    return;
+  }
+  c.innerHTML = projects.map((p, i) => {
+    const techPills = (p.techStack || []).map(t => `<span class="pill">${t}</span>`).join("");
+    return `
+      <div class="project-item">
+        <div class="project-item-header">
+          <span class="project-item-name">${p.name}</span>
+          <div class="project-actions">
+            <button class="btn-icon edit" onclick="editProject(${i})" title="Edit">✎</button>
+            <button class="btn-icon" onclick="deleteProject(${i})" title="Delete">✕</button>
+          </div>
+        </div>
+        <p class="project-item-desc">${p.description || ''}</p>
+        <div class="project-item-meta">${techPills}</div>
+      </div>`;
+  }).join("");
+}
+
+function openProjectModal(idx) {
+  editingProjectIdx = (idx !== undefined) ? idx : null;
+  const isEdit = editingProjectIdx !== null;
+  document.getElementById("modal-title").textContent = isEdit ? "Edit Project" : "Add Project";
+
+  if (isEdit) {
+    const p = profileData.projects[idx];
+    document.getElementById("pm-name").value = p.name || "";
+    document.getElementById("pm-desc").value = p.description || "";
+    document.getElementById("pm-features").value = (p.features || []).join("\n");
+    document.getElementById("pm-tech").value = (p.techStack || []).join(", ");
+    document.getElementById("pm-db").value = p.databaseDesign || "";
+  } else {
+    document.getElementById("pm-name").value = "";
+    document.getElementById("pm-desc").value = "";
+    document.getElementById("pm-features").value = "";
+    document.getElementById("pm-tech").value = "";
+    document.getElementById("pm-db").value = "";
+  }
+  document.getElementById("project-modal").classList.add("open");
+}
+
+function closeProjectModal() {
+  document.getElementById("project-modal").classList.remove("open");
+  editingProjectIdx = null;
+}
+
+async function saveProject() {
+  const project = {
+    name: document.getElementById("pm-name").value.trim(),
+    description: document.getElementById("pm-desc").value.trim(),
+    features: document.getElementById("pm-features").value.split("\n").map(f => f.trim()).filter(Boolean),
+    techStack: document.getElementById("pm-tech").value.split(",").map(t => t.trim()).filter(Boolean),
+    databaseDesign: document.getElementById("pm-db").value.trim(),
+  };
+  if (!project.name) { toast("Project name is required", "error"); return; }
+
+  try {
+    if (editingProjectIdx !== null) {
+      await api(`${API}/projects/${editingProjectIdx}`, "PUT", project);
+      profileData.projects[editingProjectIdx] = project;
+      toast("Project updated!");
+    } else {
+      await api(`${API}/projects`, "POST", project);
+      profileData.projects = [...(profileData.projects || []), project];
+      toast("Project added!");
+    }
+    renderProjectsList(profileData.projects);
+    closeProjectModal();
+  } catch (err) { toast(err.message, "error"); }
+}
+
+function editProject(idx) { openProjectModal(idx); }
+
+async function deleteProject(idx) {
+  if (!confirm("Delete this project?")) return;
+  try {
+    await api(`${API}/projects/${idx}`, "DELETE");
+    profileData.projects.splice(idx, 1);
+    renderProjectsList(profileData.projects);
+    toast("Project deleted");
+  } catch (err) { toast(err.message, "error"); }
+}
+
+// ── Education ──
+async function saveEducation() {
+  try {
+    await api(`${API}/education`, "PUT", {
+      degree: document.getElementById("f-degree").value,
+      branch: document.getElementById("f-branch").value,
+      pucPercentage: document.getElementById("f-puc").value,
+      sslcPercentage: document.getElementById("f-sslc").value,
+    });
+    toast("Education saved!");
+  } catch (err) { toast(err.message, "error"); }
+}
+
+// ── Hobbies ──
+async function saveHobbies() {
+  try {
+    const hobbies = document.getElementById("f-hobbies").value
+      .split(",").map(h => h.trim()).filter(Boolean);
+    await api(`${API}/hobbies`, "PUT", { hobbies });
+    toast("Hobbies saved!");
+  } catch (err) { toast(err.message, "error"); }
+}
+
+// ── Contact ──
+async function saveContact() {
+  try {
+    await api(`${API}/contact`, "PUT", {
+      email: document.getElementById("f-email").value,
+      github: document.getElementById("f-github").value,
+      linkedin: document.getElementById("f-linkedin").value,
+    });
+    toast("Contact info saved!");
+  } catch (err) { toast(err.message, "error"); }
+}
+
+// ── Close modal on backdrop click ──
+document.getElementById("project-modal").addEventListener("click", e => {
+  if (e.target === e.currentTarget) closeProjectModal();
+});
+
+// ── Init: check for existing session ──
+checkExistingSession();
+</script>
+</body>
+</html>
