@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Priyadarshini M — Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:     #111210;
+      --muted:   #6b6b67;
+      --rule:    #e0ddd7;
+      --bg:      #f8f6f1;
+      --surface: #f0ede6;
+      --accent:  #2a6b4f;
+      --accent2: #c8a96e;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "DM Sans", sans-serif;
+      font-weight: 300;
+      font-size: 15px;
+      line-height: 1.75;
+      min-height: 100vh;
+    }
+
+    /* ── Top accent bar ── */
+    .top-bar {
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent) 60%, var(--accent2));
+    }
+
+    /* ── Layout ── */
+    .page { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── Loading / Error ── */
+    #loading {
+      display: flex; align-items: center; justify-content: center;
+      height: 80vh; font-size: 14px; color: var(--muted); letter-spacing: .08em;
+    }
+    .dot-pulse::after {
+      content: "...";
+      animation: dots 1.4s infinite;
+    }
+    @keyframes dots { 0%,20%{content:"."} 40%{content:".."} 60%,100%{content:"..."} }
+
+    /* ── Hero ── */
+    .hero { padding: 72px 0 48px; border-bottom: 1px solid var(--rule); }
+
+    .hero-eyebrow {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 28px;
+    }
+    .hero-eyebrow .pip {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent); display: inline-block;
+    }
+
+    .hero-name {
+      font-family: "Playfair Display", serif;
+      font-size: clamp(42px, 8vw, 72px);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      color: var(--ink);
+      margin-bottom: 16px;
+    }
+
+    .hero-role {
+      font-family: "Playfair Display", serif;
+      font-size: clamp(16px, 2.5vw, 21px);
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .hero-meta {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* ── Section shared ── */
+    section { padding: 52px 0; border-bottom: 1px solid var(--rule); }
+    section:last-child { border-bottom: none; }
+
+    .section-label {
+      font-size: 10px; letter-spacing: .22em; text-transform: uppercase;
+      color: var(--accent2); margin-bottom: 28px; font-weight: 400;
+    }
+
+    /* ── About / Personal ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+    @media (max-width: 600px) { .about-grid { grid-template-columns: 1fr; } }
+
+    .about-detail-label {
+      font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 4px;
+    }
+    .about-detail-value {
+      font-family: "Playfair Display", serif;
+      font-size: 17px; color: var(--ink);
+    }
+    .about-detail { margin-bottom: 24px; }
+
+    /* ── Skills ── */
+    .skills-list {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      list-style: none;
+    }
+    .skill-tag {
+      padding: 7px 18px;
+      border: 1px solid var(--rule);
+      border-radius: 100px;
+      font-size: 13px;
+      color: var(--ink);
+      background: var(--surface);
+      transition: border-color .2s, color .2s;
+    }
+    .skill-tag:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Projects ── */
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      padding: 28px 28px 24px;
+      margin-bottom: 20px;
+    }
+    .project-name {
+      font-family: "Playfair Display", serif;
+      font-size: 20px; font-weight: 500;
+      color: var(--ink); margin-bottom: 10px;
+      line-height: 1.3;
+    }
+    .project-desc {
+      font-size: 14px; color: var(--muted);
+      margin-bottom: 18px; line-height: 1.7;
+    }
+    .project-section-title {
+      font-size: 10px; letter-spacing: .15em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 8px; margin-top: 16px;
+    }
+    .project-features {
+      list-style: none; display: flex; flex-direction: column; gap: 5px;
+    }
+    .project-features li::before { content: "→ "; color: var(--accent); }
+    .project-features li { font-size: 13px; color: var(--ink); }
+
+    .project-tech {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;
+    }
+    .tech-pill {
+      font-size: 12px;
+      padding: 3px 12px;
+      border: 1px solid var(--rule);
+      border-radius: 100px;
+      color: var(--muted);
+    }
+
+    /* ── Education ── */
+    .edu-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: 14px 0; border-bottom: 1px solid var(--rule);
+      gap: 16px;
+    }
+    .edu-row:last-child { border-bottom: none; }
+    .edu-label { font-size: 14px; color: var(--ink); }
+    .edu-pct {
+      font-family: "Playfair Display", serif;
+      font-size: 18px; color: var(--accent); font-weight: 400;
+      white-space: nowrap;
+    }
+
+    /* ── Hobbies ── */
+    .hobbies-text {
+      font-family: "Playfair Display", serif;
+      font-size: 22px; font-style: italic;
+      color: var(--muted);
+    }
+
+    /* ── Contact ── */
+    .contact-links { display: flex; flex-direction: column; gap: 14px; }
+    .contact-row {
+      display: flex; align-items: center; gap: 16px;
+      padding-bottom: 14px; border-bottom: 1px solid var(--rule);
+    }
+    .contact-row:last-child { border-bottom: none; }
+    .contact-type {
+      font-size: 10px; letter-spacing: .15em; text-transform: uppercase;
+      color: var(--muted); min-width: 64px;
+    }
+    .contact-val {
+      font-size: 14px; color: var(--ink);
+      text-decoration: none; border-bottom: 1px solid transparent;
+      transition: color .2s, border-color .2s;
+    }
+    .contact-val:hover { color: var(--accent); border-color: var(--accent); }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center; padding: 32px 0 40px;
+      font-size: 12px; color: var(--muted); letter-spacing: .05em;
+    }
+
+    /* ── Reveal animation ── */
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .55s ease, transform .55s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+
+<div id="loading"><span class="dot-pulse">Loading</span></div>
+
+<div id="app" style="display:none">
+  <div class="page">
+
+    <!-- Hero -->
+    <header class="hero reveal">
+      <div class="hero-eyebrow"><span class="pip"></span><span id="eyebrow">Portfolio</span></div>
+      <h1 class="hero-name" id="hero-name"></h1>
+      <p class="hero-role" id="hero-role"></p>
+      <p class="hero-meta" id="hero-meta"></p>
+    </header>
+
+    <!-- Skills -->
+    <section class="reveal">
+      <p class="section-label">Skills &amp; Technologies</p>
+      <ul class="skills-list" id="skills-list"></ul>
+    </section>
+
+    <!-- Projects -->
+    <section class="reveal">
+      <p class="section-label">Projects</p>
+      <div id="projects-list"></div>
+    </section>
+
+    <!-- Education -->
+    <section class="reveal">
+      <p class="section-label">Education</p>
+      <div id="education"></div>
+    </section>
+
+    <!-- Hobbies -->
+    <section class="reveal" id="hobbies-section">
+      <p class="section-label">Outside of Work</p>
+      <p class="hobbies-text" id="hobbies-text"></p>
+    </section>
+
+    <!-- Contact -->
+    <section class="reveal">
+      <p class="section-label">Get in Touch</p>
+      <div class="contact-links" id="contact-links"></div>
+    </section>
+
+  </div><!-- .page -->
+
+  <footer>
+    &copy; <span id="year"></span> Priyadarshini M &mdash; Built with Node.js &amp; MongoDB
+  </footer>
+</div><!-- #app -->
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  // ── IntersectionObserver for reveal animations ──
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+
+  function observeAll() {
+    document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+  }
+
+  // ── Render helpers ──
+  function setText(id, val) {
+    const el = document.getElementById(id);
+    if (el && val) el.textContent = val;
+  }
+
+  function renderSkills(skills) {
+    const ul = document.getElementById("skills-list");
+    ul.innerHTML = skills.map(s => `<li class="skill-tag">${s}</li>`).join("");
+  }
+
+  function renderProjects(projects) {
+    const container = document.getElementById("projects-list");
+    container.innerHTML = projects.map(p => {
+      const features = (p.features || []).map(f => `<li>${f}</li>`).join("");
+      const tech     = (p.techStack || []).map(t => `<span class="tech-pill">${t}</span>`).join("");
+      return `
+        <div class="project-card">
+          <p class="project-name">${p.name}</p>
+          <p class="project-desc">${p.description}</p>
+          ${features ? `<p class="project-section-title">Key features</p><ul class="project-features">${features}</ul>` : ""}
+          ${tech     ? `<p class="project-section-title">Built with</p><div class="project-tech">${tech}</div>` : ""}
+          ${p.databaseDesign ? `<p class="project-section-title">Database</p><p style="font-size:13px;color:var(--muted)">${p.databaseDesign}</p>` : ""}
+        </div>`;
+    }).join("");
+  }
+
+  function renderEducation(edu) {
+    const rows = [];
+    if (edu.degree && edu.branch) rows.push({ label: `${edu.degree} in ${edu.branch}`, pct: null });
+    if (edu.puc?.percentage)      rows.push({ label: "Pre-University College (PUC)", pct: edu.puc.percentage });
+    if (edu.sslc?.percentage)     rows.push({ label: "SSLC (10th Standard)", pct: edu.sslc.percentage });
+
+    document.getElementById("education").innerHTML = rows.map(r => `
+      <div class="edu-row">
+        <span class="edu-label">${r.label}</span>
+        ${r.pct ? `<span class="edu-pct">${r.pct}</span>` : ""}
+      </div>`).join("");
+  }
+
+  function renderHobbies(hobbies) {
+    if (!hobbies || !hobbies.length) {
+      document.getElementById("hobbies-section").style.display = "none";
+      return;
+    }
+    document.getElementById("hobbies-text").textContent = hobbies.join(", ");
+  }
+
+  function renderContact(contact, social) {
+    const links = [];
+
+    if (contact?.email) {
+      // Strip any markdown link formatting e.g. [email](mailto:...)
+      const raw = contact.email.replace(/\[.*?\]\((.*?)\)/, "$1").replace("mailto:", "");
+      links.push({ type: "Email", href: `mailto:${raw}`, label: raw });
+    }
+    if (social?.github)   links.push({ type: "GitHub",   href: social.github,   label: social.github.replace("https://", "") });
+    if (social?.linkedin) links.push({ type: "LinkedIn", href: social.linkedin, label: social.linkedin.replace("https://", "") });
+
+    document.getElementById("contact-links").innerHTML = links.map(l => `
+      <div class="contact-row">
+        <span class="contact-type">${l.type}</span>
+        <a href="${l.href}" target="_blank" rel="noopener noreferrer" class="contact-val">${l.label}</a>
+      </div>`).join("");
+  }
+
+  // ── Fetch & render ──
+  async function load() {
+    try {
+      const res  = await fetch("/api/profile");
+      const data = await res.json();
+
+      // Hero
+      setText("hero-name", data.name);
+      setText("hero-role", data.role);
+      const pi = data.personalInfo || {};
+      const metaParts = [pi.age ? `${pi.age} years old` : "", pi.city && pi.state ? `${pi.city}, ${pi.state}` : ""].filter(Boolean);
+      setText("hero-meta", metaParts.join("  ·  "));
+
+      // Sections
+      if (data.skills?.length)   renderSkills(data.skills);
+      if (data.projects?.length) renderProjects(data.projects);
+      if (data.education)        renderEducation(data.education);
+      renderHobbies(data.hobbies);
+      renderContact(data.contact, data.socialProfiles);
+
+      // Show page
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("app").style.display     = "block";
+
+      // Kick off reveal animations
+      requestAnimationFrame(observeAll);
+
+    } catch (err) {
+      document.getElementById("loading").textContent = "Could not connect to the database. Make sure the server is running.";
+    }
+  }
+
+  load();
+</script>
+</body>
+</html>
